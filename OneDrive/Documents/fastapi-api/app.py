@@ -2,11 +2,13 @@ from fastapi import FastAPI, HTTPException
 from pymongo import MongoClient
 from pydantic import BaseModel
 from bson import ObjectId
+import os
 
 app = FastAPI()
 
-# Connect to MongoDB
-client = MongoClient("mongodb://localhost:27017/")
+# ✅ Use an environment variable for MongoDB connection (important for deployment)
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
 db = client.chat_db  # Database
 collection = db.chats  # Collection
 
@@ -15,7 +17,7 @@ class ChatMessage(BaseModel):
     user_id: str
     message: str
 
-# ✅ Add a root endpoint to avoid 404 errors
+# ✅ Root endpoint to prevent 404 errors
 @app.get("/")
 async def root():
     return {"message": "Welcome to SmartChat API!"}
